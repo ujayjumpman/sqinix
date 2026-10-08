@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw media sources (large)
+/media-src/
+/scripts/.tmp/
+
+# keep the documented example
+!.env.example
+
+# keep the documented example
+!.env.example

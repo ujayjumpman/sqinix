@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // build-time tooling (node scripts + the headless three.js render scenes)
+    "scripts/**",
+    "media-src/**",
   ]),
 ]);
 

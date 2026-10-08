@@ -1,0 +1,67 @@
+# Squinix static site - Apache config (copied to the web root with the rest of out/).
+# Works on ordinary shared hosting (mod_rewrite, mod_headers, mod_expires, mod_deflate).
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- enable once the SSL certificate is installed ---------------------------
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # --- old template URLs -> new pages (keeps any existing links/search results alive) ---
+  RewriteRule ^index\.html$    /          [R=301,L]
+  RewriteRule ^about\.html$    /about/    [R=301,L]
+  RewriteRule ^services\.html$ /services/ [R=301,L]
+  RewriteRule ^contact\.html$  /contact/  [R=301,L]
+  RewriteRule ^project\.html$  /          [R=301,L]
+  RewriteRule ^blog(-single)?\.html$ /    [R=301,L]
+</IfModule>
+
+ErrorDocument 404 /404.html
+
+# --- media types ---------------------------------------------------------------
+<IfModule mod_mime.c>
+  AddType video/mp4 .mp4
+  AddType video/webm .webm
+  AddType image/webp .webp
+  AddType image/svg+xml .svg
+  AddType text/plain .txt
+</IfModule>
+
+# --- compression -----------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+# --- caching: fingerprinted assets and media are immutable, HTML always revalidates ----
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/plain "access plus 0 seconds"
+  ExpiresByType application/json "access plus 0 seconds"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType video/webm "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|png|svg|mp4|webm|woff2|css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(html|txt|json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>

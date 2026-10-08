@@ -1,0 +1,17 @@
+{
+  "name": "servers",
+  "desktop": {
+    "count": 150,
+    "width": 1440,
+    "height": 810,
+    "ext": "webp",
+    "pad": 4
+  },
+  "mobile": {
+    "count": 90,
+    "width": 720,
+    "height": 960,
+    "ext": "webp",
+    "pad": 4
+  }
+}

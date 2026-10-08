@@ -1,26 +1,271 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------
+   Squinix design tokens. Brand blues are sampled from the logo
+   (#1185B9 wordmark, #52B8EC -> #2C488A ribbon gradient).
+------------------------------------------------------------------- */
+@theme {
+  --color-ink: #05070b;
+  --color-ink-2: #0a0f17;
+  --color-ink-3: #111826;
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-fog: #e8eef7;
+  --color-mute: #93a0b4;
+  --color-paper: #f4f6fa;
+  --color-paper-2: #e6ebf3;
+  --color-brand: #1b9ce3;
+  --color-brand-deep: #1566ad;
+  --color-navy: #2c488a;
+  --color-sky: #52b8ec;
+  --color-violet: #6d5cff;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-ink);
+  color: var(--color-fog);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-sky);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+img,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+/* Lenis (recommended base rules) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* ------------------------------------------------------------------ type */
+@layer components {
+  .container-x {
+    width: min(100% - 2rem, 90rem);
+    margin-inline: auto;
+  }
+  @media (min-width: 768px) {
+    .container-x {
+      width: min(100% - 4rem, 90rem);
+    }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-sky);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: var(--color-sky);
+    box-shadow: 0 0 0 4px rgb(82 184 236 / 0.18), 0 0 18px var(--color-sky);
+  }
+
+  .display-1 {
+    font-size: clamp(2.9rem, 9.2vw, 9.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.048em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .display-2 {
+    font-size: clamp(2.3rem, 6.2vw, 5.8rem);
+    line-height: 0.98;
+    letter-spacing: -0.042em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .display-3 {
+    font-size: clamp(1.8rem, 3.6vw, 3.4rem);
+    line-height: 1.04;
+    letter-spacing: -0.034em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .lead {
+    font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+    line-height: 1.55;
+    color: var(--color-mute);
+    text-wrap: pretty;
+  }
+
+  .text-grad {
+    background: linear-gradient(100deg, #9fdcff 0%, #1b9ce3 48%, #6d5cff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .glass {
+    background: rgb(255 255 255 / 0.045);
+    border: 1px solid var(--color-line);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* cursor-follow spotlight used by cards (set --mx / --my from JS) */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgb(82 184 236 / 0.16), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-soft);
+  }
+  .spotlight:hover::after {
+    opacity: 1;
+  }
+
+  /* hidden-until-revealed state (GSAP removes it). noscript restores it. */
+  .reveal-init {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+
+  .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* decorative numerals live in a pseudo-element so assistive tech and contrast checks ignore them */
+  .watermark::before {
+    content: attr(data-n);
+  }
+
+  /* split-text line mask */
+  .split-line {
+    overflow: hidden;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+}
+
+/* hairline scrollbar */
+@media (hover: hover) {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1d2736;
+    border-radius: 10px;
+    border: 2px solid var(--color-ink);
+  }
+}
+
+/* keyframes used by CSS-only effects */
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, -6px, 0);
+  }
+  50% {
+    transform: translate3d(0, 6px, 0);
+  }
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal-init {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* repeat visits / reduced motion: no intro panel */
+.skip-preload .preloader {
+  display: none !important;
+}
+
+/* repeat visits have no overlay: keep the SSR-visible hero copy hidden until its entrance runs */
+.skip-preload [data-split="load"],
+.skip-preload [data-intro] {
+  visibility: hidden;
 }
